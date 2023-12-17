@@ -16,7 +16,7 @@ thrown in /var/www/html/lahtp/library/post_test.php on line 6
     <meta name="author" content="">
     <link rel="icon" href="../../../../favicon.ico">
 
-    <title>Album</title>
+    <title>Web-APP</title>
 
     <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -48,7 +48,7 @@ thrown in /var/www/html/lahtp/library/post_test.php on line 6
         <div class="container d-flex justify-content-between">
           <a href="#" class="navbar-brand d-flex align-items-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-            <strong>Album</strong>
+            <strong>WEB-APP</strong>
           </a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -61,7 +61,7 @@ thrown in /var/www/html/lahtp/library/post_test.php on line 6
 
       <section class="jumbotron text-center">
         <div class="container">
-          <h1 class="jumbotron-heading">Album</h1>
+          <h1 class="jumbotron-heading">Welcome</h1>
           <p class="lead text-muted">post what's on your mind ? .</p>
           <p>
             <a href="#" class="btn btn-primary my-2">POST</a>
