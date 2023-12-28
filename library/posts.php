@@ -65,11 +65,11 @@ function edit_post($post_id, $post_content){
 
 function delete_post($post_id){
     $conn = get_db_connection();
-    //$post = get_post($post_id);
+    $post = get_post($post_id);
     $query = "DELETE FROM `lahtp`.`posts` WHERE (`post_id` = '$post_id');";
 
     if(mysqli_query($conn, $query)){
-        // unlink('../'.$post['image']);
+        unlink('../'.$post['image']);
         return TRUE;
     }
     else{

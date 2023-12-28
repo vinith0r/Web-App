@@ -98,15 +98,16 @@ if(isset($_GET['delete'])){
 
     <main role="main">
       <section class="album py-5 bg-black" id="bod11">
-        <div class="container">
-          <h1 class="home">Home</h1>
-
+        <div class="home">
+          <h2>Home</h2>
+          <h2>Home</h2>
+        </div>
 					<?php
 				if(!isset($_GET['edit'])){
 					?>
 					<form action="home.php?post" method="POST" enctype="multipart/form-data">
-						<div class="">
-							<textarea name="content" class="" placeholder="What's on your mind?" cols="50" rows="5" style="border:dashed 2px green;"></textarea>
+						<div class="form-group">
+							<textarea name="content" class="text-white4" placeholder="What's on your mind?" cols="50" rows="5" style="border:dashed 2px green;"></textarea>
 						</div><br>
 						<div class="form-group">
 							<input type="file" class="ffd" name="image">
@@ -120,8 +121,8 @@ if(isset($_GET['delete'])){
 					$post = get_post($_GET['edit']);
 					?>
 					<form action="home.php?post" method="POST" enctype="multipart/form-data">
-						<div class="">
-							<textarea name="content" class="" placeholder="What's on your mind?" cols="50" rows="5" style="border:dashed 2px green;"><?=$post['content']?></textarea>
+						<div class="form-group">
+							<textarea name="content" class="text-white4" placeholder="What's on your mind?" cols="50" rows="5" style="border:dashed 2px green;"><?=$post['content']?></textarea>
 						</div>
 						<?php
 						if(isset($_GET['edit'])){
@@ -131,7 +132,7 @@ if(isset($_GET['delete'])){
 						}
 						?>
 						<div class="form-group">
-							<button type="submit" class="post11">Post!</button>
+							<button type="submit" class="post11">Post</button>
 						</div>
 					</form>
 					<?php
@@ -155,27 +156,33 @@ if(isset($_GET['delete'])){
                 <div class="card-body">
                   <p class="card-text"><?=$post['content']?></p>
                   <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                    <a href="home.php?like=<?=$post['post_id']?>" class="btn btn-sm btn-outline-secondary like-btn" data-toggle="tooltip" data-placement="top" title="<?=get_likes_count($post['post_id'])?> Liked">
+                    <div class="likes">
+                    <a href="home.php?like=<?=$post['post_id']?>"><img src="styles/img/heart (1).png" width="48" height="38"  class="btn btn-sm btn-outline-secondary like-btn" data-toggle="tooltip" data-placement="top" title="<?=get_likes_count($post['post_id'])?> Liked"></a>
 												<?php
-												if(has_liked($post['post_id'])) {
-													echo "Liked";
-												} else {
-													echo "Like";
-												}
+                        echo get_likes_count($post['post_id']);
+                        
 												?>
-											</a>
+                      <?php 
+                        if($post['posted_by'] == get_current_username1()){
+                      ?>
                       <a href="home.php?edit=<?=$post['post_id']?>" type="button" class="btn btn-sm btn-outline-secondary">Edit</a>
+                      <?php } ?>
                     </div>
-                    <small class="text-white"><?=$humanDiff?></small>
+                    <small class="text-white3"><?=$humanDiff?></small>
                   </div>
                   <br>
+                  
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
+                    <?php
+                        if($post['posted_by'] == get_current_username1()){
+                      ?>
                       <a href="home.php?delete=<?=$post['post_id']?>" type="button" class="btn btn-sm btn-danger btn-sm">Delete</a>
+                      <?php } ?>
                       <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button> -->
                     </div>
-                    <small class="text-white">By:<?=$post['posted_by']?></small>
+
+                    <small class="text-white3">Posted_By: <?=$post['posted_by']?></small>
                   </div>
                 </div>
               </div>         
@@ -197,24 +204,18 @@ if(isset($_GET['delete'])){
       </div>
     </footer>
 
-    <script type="text/javascript">
-		$(function () {
-			$('[data-toggle="tooltip"]').tooltip();
-		});
+     <script type="text/javascript">
+		  $(function () {
+			  $('[data-toggle="tooltip"]').tooltip();
+		  });
+      
+      // $('a.like-btn').on('click', function(){
+      //   var postId = $(this).attr('data-post-id');
+      //   alert('The post Id is '+postId);
+      // })
+      </script>
 
-		$('a.like-btn').on('click', function(e){
-			var postId = $(this).attr('data-post-id');
-			var el = $(this);
-			$.get('/api.php?like_post='+postId, function(data){
-				if(data.result=="success"){
-					el.attr('data-original-title', data.total_count + " Liked");
-					el.html(data.total_count + " Liked");
-				}
-			});
-			e.stopPropagation();
-		});
-	</script>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
     <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="assets/js/vendor/popper.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
