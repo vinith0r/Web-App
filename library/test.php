@@ -11,11 +11,11 @@ include_once 'auth.php';
 //$result = do_login('vinith', 'vinith');
 //echo "do_ login(): ".$result;
 
-$result=verify_session($_COOKIE['username'], $_COOKIE['token']);
-echo "verify_session(): ".$result;
+// $result=verify_session($_COOKIE['username'], $_COOKIE['token']);
+// echo "verify_session(): ".$result;
 
-//invalidate_session($_COOKIE['username'], $_COOKIE['token']);
-
-
+//invalidate_session($_COOKIE['username'], $_COOKIE['token']
+// print_r(get_otp());
+// echo get_otp();
 ?>
 </pre>

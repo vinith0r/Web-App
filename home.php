@@ -1,11 +1,44 @@
-<!-- 
-Home Page is incompleted due to post_test.php && posts.php 
+<?php 
 
-ERROR: [php:error] [pid 1016] [client ::1:55538] PHP Fatal error:  Uncaught
-Error: Call to undefined function do_post() in /var/www/html/lahtp/library/post_test.php:Stack trace:\n#0 {main}\n
-thrown in /var/www/html/lahtp/library/post_test.php on line 6
--->
+include_once 'library/posts.php';
+require 'vendor/autoload.php';
+use Carbon\Carbon;
 
+if(isset($_COOKIE['username']) and isset($_COOKIE['token'])){
+  $username = $_COOKIE['username'];
+  $token = $_COOKIE['token'];
+
+  if(!verify_session($username, $token)){
+    header("Location: /lahtp/signin.php");
+  }
+} else {
+	header("Location: /lahtp/signin.php");
+}
+
+if(isset($_GET['post'])){
+	if(isset($_POST['edit']) and isset($_POST['content'])){
+		edit_post($_POST['edit'], $_POST['content']);
+	} else if(isset($_POST['content']) and isset($_FILES['image'])){
+		$target_directory = 'images/';
+		$target_file = $target_directory . basename($_FILES['image']['name']);
+		$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+		if($imageFileType == 'jpg' or $imageFileType == 'png' or $imageFileType == 'jpeg'){
+				move_uploaded_file($_FILES['image']['tmp_name'], $target_file);
+				do_post($_POST['content'], "\\".$target_file);
+			}
+		  else {
+			die("Invalid format");
+		}
+	}
+}
+
+if(isset($_GET['like'])){
+  like_post($_GET['like']);
+}
+if(isset($_GET['delete'])){
+  delete_post($_GET['delete']);
+}
+?>
 
 <!doctype html>
 <html lang="en">
@@ -17,38 +50,44 @@ thrown in /var/www/html/lahtp/library/post_test.php on line 6
     <link rel="icon" href="../../../../favicon.ico">
 
     <title>Web-APP</title>
-
+    <link href="styles/home.css" rel="stylesheet">
     <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link href="album.css" rel="stylesheet">
+
   </head>
 
   <body>
 
     <header>
-      <div class="collapse bg-dark" id="navbarHeader">
+      <div class="collapse bg-black" id="navbarHeader">
         <div class="container">
           <div class="row">
             <div class="col-sm-8 col-md-7 py-4">
               <h4 class="text-white">About</h4>
+              <ul class="list-unstyled">
+						</ul>
               <p class="text-grey" style="color:#919191;"> Do Post and Write Whats on your mind</p>
             </div>
             <div class="col-sm-4 offset-md-1 py-4">
-              <h4 class="text-white">Contact</h4>
+              <h4 class="text-white">Welcome, <?=get_current_username1()?></h4>
               <ul class="list-unstyled">
-                <li><a href="https://twitter.com/Vinith01" target = "_blank" class="text-white">Follow on Twitter</a></li>
-                <li><a href="https://www.instagram.com/vinit_h01/" target = "_blank" class="text-white">Like on instagram</a></li>
-                <li><a href="mailto:vini01.me@gmail.com"  target = "_blank" class="text-white">Email me</a></li>
+                <br><br><br>
+                <li><a href="https://twitter.com/Vinith01" target = "_blank" class="text-white2">Follow on Github</a></li><br>
+                <li><a href="https://www.instagram.com/vinit_h01/" target = "_blank" class="text-white2">Like on instagram</a></li><br>
+                <li><a href="mailto:vini01.me@gmail.com"  target = "_blank" class="text-white2">Email me</a></li>
+                <br><br>
               </ul>
+              <h4><li><a href="logout.php" class="text-white1">Logout</a></li><h4>
             </div>
           </div>
         </div>
       </div>
-      <div class="navbar navbar-dark bg-dark box-shadow">
+      <div class="navbar navbar-black bg-black box-shadow">
         <div class="container d-flex justify-content-between">
           <a href="#" class="navbar-brand d-flex align-items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-            <strong>WEB-APP</strong>
+            <img src="styles/img/icons8-compact-camera-64 (1).png" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></img>
+            <strong style="color: #d1544b">WEB-APP</strong>
           </a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -58,174 +97,123 @@ thrown in /var/www/html/lahtp/library/post_test.php on line 6
     </header>
 
     <main role="main">
-
-      <section class="jumbotron text-center">
+      <section class="album py-5 bg-black" id="bod11">
         <div class="container">
-          <h1 class="jumbotron-heading">Welcome</h1>
-          <p class="lead text-muted">post what's on your mind ? .</p>
-          <p>
-            <a href="#" class="btn btn-primary my-2">POST</a>
-            <a href="#" class="btn btn-secondary my-2">Write</a>
-          </p>
+          <h1 class="home">Home</h1>
+
+					<?php
+				if(!isset($_GET['edit'])){
+					?>
+					<form action="home.php?post" method="POST" enctype="multipart/form-data">
+						<div class="">
+							<textarea name="content" class="" placeholder="What's on your mind?" cols="50" rows="5" style="border:dashed 2px green;"></textarea>
+						</div><br>
+						<div class="form-group">
+							<input type="file" class="ffd" name="image">
+						</div><br>
+						<div class="form-group">
+							<button type="submit" class="post11"id="postButton1">Post!</button>
+						</div>
+					</form>
+					<?php
+				} else {
+					$post = get_post($_GET['edit']);
+					?>
+					<form action="home.php?post" method="POST" enctype="multipart/form-data">
+						<div class="">
+							<textarea name="content" class="" placeholder="What's on your mind?" cols="50" rows="5" style="border:dashed 2px green;"><?=$post['content']?></textarea>
+						</div>
+						<?php
+						if(isset($_GET['edit'])){
+							?>
+							<input type="hidden" class="form-control-file" name="edit" value="<?=$_GET['edit']?>">
+							<?php
+						}
+						?>
+						<div class="form-group">
+							<button type="submit" class="post11">Post!</button>
+						</div>
+					</form>
+					<?php
+				}
+				?>
         </div>
       </section>
-
-      <div class="album py-5 bg-light">
+      <div class="album py-5 bg-black">
         <div class="container">
 
           <div class="row">
+            <?php
+            $posts = get_all_posts();
+            foreach ($posts as $post){
+              $carbonTime = Carbon::parse($post['posted_on']);
+              $humanDiff = $carbonTime->diffForHumans();
+            ?>
             <div class="col-md-4">
-              <div class="card mb-4 box-shadow">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
+              <div class="card mb-4">
+                <img class="card-img-top" src="<?=$post['image']?>" alt="Card image cap">
                 <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                  <p class="card-text"><?=$post['content']?></p>
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    <a href="home.php?like=<?=$post['post_id']?>" class="btn btn-sm btn-outline-secondary like-btn" data-toggle="tooltip" data-placement="top" title="<?=get_likes_count($post['post_id'])?> Liked">
+												<?php
+												if(has_liked($post['post_id'])) {
+													echo "Liked";
+												} else {
+													echo "Like";
+												}
+												?>
+											</a>
+                      <a href="home.php?edit=<?=$post['post_id']?>" type="button" class="btn btn-sm btn-outline-secondary">Edit</a>
                     </div>
-                    <small class="text-muted">9 mins</small>
+                    <small class="text-white"><?=$humanDiff?></small>
                   </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                  <br>
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                      <a href="home.php?delete=<?=$post['post_id']?>" type="button" class="btn btn-sm btn-danger btn-sm">Delete</a>
+                      <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button> -->
                     </div>
-                    <small class="text-muted">9 mins</small>
+                    <small class="text-white">By:<?=$post['posted_by']?></small>
                   </div>
                 </div>
-              </div>
+              </div>         
             </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow">
-                <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap">
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-muted">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <?php
+            }
+            ?>
           </div>
         </div>
       </div>
 
     </main>
 
-    <footer class="text-muted">
+    <footer class="album py-5 bg-black">
       <div class="container">
-        <p class="float-right">
-          <a href="#">Back to top</a>
+        <p class="">
+          <a class="des" href="#">Back to top</a>
         </p>
       </div>
     </footer>
 
-    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript">
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip();
+		});
+
+		$('a.like-btn').on('click', function(e){
+			var postId = $(this).attr('data-post-id');
+			var el = $(this);
+			$.get('/api.php?like_post='+postId, function(data){
+				if(data.result=="success"){
+					el.attr('data-original-title', data.total_count + " Liked");
+					el.html(data.total_count + " Liked");
+				}
+			});
+			e.stopPropagation();
+		});
+	</script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="assets/js/vendor/popper.min.js"></script>

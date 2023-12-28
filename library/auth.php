@@ -151,15 +151,33 @@ function verify_session($username, $token){
 function invalidate_session($username, $token){
 	$query   = "UPDATE `lahtp`.`session` SET `active` = '0' WHERE `username` = '$username' AND `token` = '$token';";
 	$db_conn = get_db_connection();
-	setcookie('username', $username, time()-36000, "/");
+	setcookie('username', $username, time()-36000, "/"); 
 	setcookie('token', $token, time()-36000, "/");
 	return mysqli_query($db_conn, $query);
 }
 // get current username from cookie to use in /post.php
-function get_current_username(){
+function get_current_username1(){
+	if(isset($_COOKIE['username']) and isset($_COOKIE['token'])){
 	if(verify_session($_COOKIE['username'], $_COOKIE['token'])){
 		return $_COOKIE['username'];
 	} else {
 		return NULL;
+	}
+}
+}
+
+function get_otp(){
+	$conn = get_db_connection();
+    $username = get_current_username1();
+    $query = "SELECT `otp` AS otp FROM lahtp.authentication";
+    $result = mysqli_query($conn, $query);
+    if(mysqli_num_rows($result) > 0){
+		$posts = [];
+		while($row = mysqli_fetch_assoc($result)){
+			$posts[] = $row;
+		}
+		return end($posts);
+	} else {
+		return [];
 	}
 }

@@ -122,7 +122,7 @@ else{
     <link href="sign-in.css" rel="stylesheet">
   </head>
   <body class="text-center">
-    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <img src="images/icons8-login-100.png" style="display: none;"> </img>
       <symbol id="check2" viewBox="0 0 16 16">
         <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
       </symbol>
@@ -200,8 +200,8 @@ else{
 ?>
 
 
-    <img class="mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
-    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+    <img class="mb-4" src="images/icons8-login-100.png" alt="" width="100" height="100">
+    <h1 class="h3 mb-3 fw-normal">Log In</h1>
 
     <div class="form-floating">
       <input name="username" type="username" class="form-control" id="floatingInput" placeholder="name@example.com">
