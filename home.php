@@ -73,7 +73,7 @@ if(isset($_GET['delete'])){
               <h4 class="text-white">Welcome, <?=get_current_username1()?></h4>
               <ul class="list-unstyled">
                 <br><br><br>
-                <li><a href="https://twitter.com/Vinith01" target = "_blank" class="text-white2">Follow on Github</a></li><br>
+                <li><a href="https://github.com/vinith0r" target = "_blank" class="text-white2">Follow on Github</a></li><br>
                 <li><a href="https://www.instagram.com/vinit_h01/" target = "_blank" class="text-white2">Like on instagram</a></li><br>
                 <li><a href="mailto:vini01.me@gmail.com"  target = "_blank" class="text-white2">Email me</a></li>
                 <br><br>
@@ -159,8 +159,12 @@ if(isset($_GET['delete'])){
                     <div class="likes">
                     <a href="home.php?like=<?=$post['post_id']?>"><img src="styles/img/heart (1).png" width="48" height="38"  class="btn btn-sm btn-outline-secondary like-btn" data-toggle="tooltip" data-placement="top" title="<?=get_likes_count($post['post_id'])?> Liked"></a>
 												<?php
-                        echo get_likes_count($post['post_id']);
-                        
+                        //echo get_likes_count($post['post_id']);
+												if(has_liked($post['post_id'])) {
+													echo get_likes_count($post['post_id']);
+												} else {
+													echo get_likes_count($post['post_id']);
+												}
 												?>
                       <?php 
                         if($post['posted_by'] == get_current_username1()){
